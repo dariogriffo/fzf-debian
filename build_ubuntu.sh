@@ -1,12 +1,39 @@
 FZF_VERSION=$1
 BUILD_VERSION=$2
-declare -a arr=("jammy" "noble" "questing")
-for i in "${arr[@]}"
+declare -a distros=("questing")
+
+declare -A arch_map=(
+  ["amd64"]="linux_amd64"
+  ["arm64"]="linux_arm64"
+  ["armel"]="linux_armv5"
+  ["armhf"]="linux_armv7"
+  ["ppc64el"]="linux_ppc64le"
+  ["s390x"]="linux_s390x"
+  ["riscv64"]="linux_riscv64"
+  ["loong64"]="linux_loong64"
+)
+
+for UBUNTU_DIST in "${distros[@]}"
 do
-  UBUNTU_DIST=$i
-  FULL_VERSION=$FZF_VERSION-${BUILD_VERSION}+${UBUNTU_DIST}_amd64_ubu
-  docker build . -f Dockerfile.ubu -t fzf-ubuntu-$UBUNTU_DIST --build-arg UBUNTU_DIST=$UBUNTU_DIST --build-arg FZF_VERSION=$FZF_VERSION --build-arg BUILD_VERSION=$BUILD_VERSION --build-arg FULL_VERSION=$FULL_VERSION
-  id="$(docker create fzf-ubuntu-$UBUNTU_DIST)"
-  docker cp $id:/fzf_$FULL_VERSION.deb - > ./fzf_$FULL_VERSION.deb
-  tar -xf ./fzf_$FULL_VERSION.deb
+  for DEB_ARCH in "${!arch_map[@]}"
+  do
+    FZF_ARCH="${arch_map[$DEB_ARCH]}"
+    FULL_VERSION=$FZF_VERSION-${BUILD_VERSION}+${UBUNTU_DIST}_${DEB_ARCH}_ubu
+
+    wget https://github.com/junegunn/fzf/releases/download/v${FZF_VERSION}/fzf-${FZF_VERSION}-${FZF_ARCH}.tar.gz
+    tar -xf fzf-${FZF_VERSION}-${FZF_ARCH}.tar.gz
+    rm -f fzf-${FZF_VERSION}-${FZF_ARCH}.tar.gz
+
+    docker build . -f Dockerfile.ubu -t fzf-ubuntu-${UBUNTU_DIST}-${DEB_ARCH} \
+      --build-arg UBUNTU_DIST=$UBUNTU_DIST \
+      --build-arg FZF_VERSION=$FZF_VERSION \
+      --build-arg BUILD_VERSION=$BUILD_VERSION \
+      --build-arg FULL_VERSION=$FULL_VERSION \
+      --build-arg DEB_ARCH=$DEB_ARCH
+    id="$(docker create fzf-ubuntu-${UBUNTU_DIST}-${DEB_ARCH})"
+    docker cp $id:/fzf_$FULL_VERSION.deb - > ./fzf_$FULL_VERSION.deb
+    tar -xf ./fzf_$FULL_VERSION.deb
+
+    rm -f fzf
+  done
 done

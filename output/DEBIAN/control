@@ -5,6 +5,6 @@ Maintainer: Dario Griffo <dariogriffo@gmail.com>
 Homepage: https://github.com/dariogriffo/fzf-debian
 Package: fzf
 Version: FZF_VERSION-BUILD_VERSION+DIST
-Architecture: amd64
+Architecture: ARCH
 Depends: 
 Description: A general-purpose command-line fuzzy finder.
