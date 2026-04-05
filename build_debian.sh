@@ -1,6 +1,6 @@
 FZF_VERSION=$1
 BUILD_VERSION=$2
-declare -a distros=("forky")
+declare -a distros=("bookworm" "trixie" "forky" "sid")
 
 declare -A arch_map=(
   ["amd64"]="linux_amd64"
