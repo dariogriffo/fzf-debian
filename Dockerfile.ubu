@@ -9,7 +9,7 @@ ARG DEB_ARCH=amd64
 
 RUN mkdir -p /output/usr/bin
 RUN mkdir -p /output/usr/share/doc/fzf
-COPY fzf /output/usr/bin/
+COPY build/${DEB_ARCH}/fzf /output/usr/bin/fzf
 RUN chmod 755 /output/usr/bin/fzf
 RUN mkdir -p /output/DEBIAN
 COPY output/DEBIAN/control /output/DEBIAN/
