@@ -21,7 +21,8 @@ do
     FULL_VERSION=$FZF_VERSION-${BUILD_VERSION}+${DEBIAN_DIST}_${DEB_ARCH}
 
     wget https://github.com/junegunn/fzf/releases/download/v${FZF_VERSION}/fzf-${FZF_VERSION}-${FZF_ARCH}.tar.gz
-    tar -xf fzf-${FZF_VERSION}-${FZF_ARCH}.tar.gz
+    mkdir -p build/${DEB_ARCH}
+    tar -xf fzf-${FZF_VERSION}-${FZF_ARCH}.tar.gz -C build/${DEB_ARCH}
     rm -f fzf-${FZF_VERSION}-${FZF_ARCH}.tar.gz
 
     docker build . -t fzf-${DEBIAN_DIST}-${DEB_ARCH} \
@@ -34,6 +35,6 @@ do
     docker cp $id:/fzf_$FULL_VERSION.deb - > ./fzf_$FULL_VERSION.deb
     tar -xf ./fzf_$FULL_VERSION.deb
 
-    rm -f fzf
+    rm -rf build/${DEB_ARCH}
   done
 done
