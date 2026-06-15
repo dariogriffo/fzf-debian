@@ -1,0 +1,39 @@
+#!/usr/bin/make -f
+DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+PKG_VERSION := $(shell dpkg-parsechangelog -S Version | sed 's/[-~].*//')
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+
+override_dh_auto_build:
+	@arch="$(DEB_HOST_ARCH)"; \
+	case "$$arch" in \
+		amd64)   RELEASE="fzf-$(PKG_VERSION)-linux_amd64" ;; \
+		arm64)   RELEASE="fzf-$(PKG_VERSION)-linux_arm64" ;; \
+		armel)   RELEASE="fzf-$(PKG_VERSION)-linux_armv5" ;; \
+		armhf)   RELEASE="fzf-$(PKG_VERSION)-linux_armv7" ;; \
+		ppc64el) RELEASE="fzf-$(PKG_VERSION)-linux_ppc64le" ;; \
+		s390x)   RELEASE="fzf-$(PKG_VERSION)-linux_s390x" ;; \
+		riscv64) RELEASE="fzf-$(PKG_VERSION)-linux_riscv64" ;; \
+		loong64) RELEASE="fzf-$(PKG_VERSION)-linux_loong64" ;; \
+		*) echo "Unsupported architecture: $$arch"; exit 1 ;; \
+	esac; \
+	echo "Downloading $$RELEASE for $(PKG_VERSION)..."; \
+	wget -q "https://github.com/junegunn/fzf/releases/download/v$(PKG_VERSION)/$$RELEASE.tar.gz"; \
+	tar -xf "$$RELEASE.tar.gz"; \
+	rm -f "$$RELEASE.tar.gz"; \
+	echo "$$RELEASE" > .fzf_release_name
+
+override_dh_auto_install:
+	@install -D -m 755 fzf debian/fzf/usr/bin/fzf
+
+override_dh_auto_test:
+
+override_dh_auto_clean:
+	@rm -f fzf .fzf_release_name || true
+
+override_dh_strip:
+
+override_dh_shlibdeps:
