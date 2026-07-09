@@ -18,7 +18,7 @@ do
   for DEB_ARCH in "${!arch_map[@]}"
   do
     FZF_ARCH="${arch_map[$DEB_ARCH]}"
-    FULL_VERSION=$FZF_VERSION-${BUILD_VERSION}+${DEBIAN_DIST}_${DEB_ARCH}
+    FULL_VERSION=$FZF_VERSION-${BUILD_VERSION}~${DEBIAN_DIST}_${DEB_ARCH}
 
     wget https://github.com/junegunn/fzf/releases/download/v${FZF_VERSION}/fzf-${FZF_VERSION}-${FZF_ARCH}.tar.gz
     mkdir -p build/${DEB_ARCH}
