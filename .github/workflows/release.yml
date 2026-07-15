@@ -23,6 +23,11 @@ jobs:
       - name: Checkout fzf-debian
         uses: actions/checkout@v4
 
+      - name: Validate upstream license permits paid distribution
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: ./validate_license.sh ${{ inputs.fzf_version }}
+
       - name: Build fzf
         run: ./build.sh ${{ inputs.fzf_version }} ${{ inputs.build_version }}
 
