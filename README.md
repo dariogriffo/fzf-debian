@@ -20,7 +20,7 @@ This repository contains build scripts to produce the _unofficial_ Debian packag
 (.deb) for [fzf](https://github.com/junegunn/fzf/) hosted at [deb.griffo.io](https://deb.griffo.io)
 
 <p align="center">
-⭐⭐⭐ Love using fzf on Debian? Show your support by starring this repo or [subscribing](https://buy.stripe.com/aFa28q8hr0lRdlm4a2enS01) — access to this repository requires a yearly subscription. ⭐⭐⭐
+⭐⭐⭐ Love using fzf on Debian? Show your support by starring this repo or [subscribing](https://buy.stripe.com/aFa28q8hr0lRdlm4a2enS01) — from 1 October 2026, apt access requires a yearly subscription. ⭐⭐⭐
 </p>
 
 Currently supported debian distros are:
@@ -37,6 +37,11 @@ install on Debian. If you're looking for the fzf source code, see
 📖 **Step-by-step install guide:** [Debian](https://deb.griffo.io/install-latest-fzf-in-debian.html) · [Ubuntu](https://deb.griffo.io/install-latest-fzf-in-ubuntu.html)
 
 ### The Debian way
+
+> ⚠️ **From 1 October 2026, apt access requires a yearly subscription**
+> ([deb.griffo.io](https://deb.griffo.io)). To use this tool for free, download
+> the .deb from the [Releases](https://github.com/dariogriffo/fzf-debian/releases) page
+> and install it manually (see below).
 
 Visit [deb.griffo.io](https://deb.griffo.io) for instructions on how to setup apt
 
