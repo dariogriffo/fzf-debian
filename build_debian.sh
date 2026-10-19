@@ -1,7 +1,5 @@
 FZF_VERSION=$1
 BUILD_VERSION=$2
-declare -a distros=("bookworm" "trixie" "forky" "sid")
-
 declare -A arch_map=(
   ["amd64"]="linux_amd64"
   ["arm64"]="linux_arm64"
@@ -13,28 +11,27 @@ declare -A arch_map=(
   ["loong64"]="linux_loong64"
 )
 
-for DEBIAN_DIST in "${distros[@]}"
+# One package for every suite: upstream ships one static binary per
+# architecture, so only the old ~<suite> version suffix ever differed. The
+# fixed ~griffo keeps it below the distro's own build of the same version.
+for DEB_ARCH in "${!arch_map[@]}"
 do
-  for DEB_ARCH in "${!arch_map[@]}"
-  do
-    FZF_ARCH="${arch_map[$DEB_ARCH]}"
-    FULL_VERSION=$FZF_VERSION-${BUILD_VERSION}~${DEBIAN_DIST}_${DEB_ARCH}
+  FZF_ARCH="${arch_map[$DEB_ARCH]}"
+  FULL_VERSION=$FZF_VERSION-${BUILD_VERSION}~griffo_${DEB_ARCH}
 
-    wget https://github.com/junegunn/fzf/releases/download/v${FZF_VERSION}/fzf-${FZF_VERSION}-${FZF_ARCH}.tar.gz
-    mkdir -p build/${DEB_ARCH}
-    tar -xf fzf-${FZF_VERSION}-${FZF_ARCH}.tar.gz -C build/${DEB_ARCH}
-    rm -f fzf-${FZF_VERSION}-${FZF_ARCH}.tar.gz
+  wget https://github.com/junegunn/fzf/releases/download/v${FZF_VERSION}/fzf-${FZF_VERSION}-${FZF_ARCH}.tar.gz
+  mkdir -p build/${DEB_ARCH}
+  tar -xf fzf-${FZF_VERSION}-${FZF_ARCH}.tar.gz -C build/${DEB_ARCH}
+  rm -f fzf-${FZF_VERSION}-${FZF_ARCH}.tar.gz
 
-    docker build . -t fzf-${DEBIAN_DIST}-${DEB_ARCH} \
-      --build-arg DEBIAN_DIST=$DEBIAN_DIST \
-      --build-arg FZF_VERSION=$FZF_VERSION \
-      --build-arg BUILD_VERSION=$BUILD_VERSION \
-      --build-arg FULL_VERSION=$FULL_VERSION \
-      --build-arg DEB_ARCH=$DEB_ARCH
-    id="$(docker create fzf-${DEBIAN_DIST}-${DEB_ARCH})"
-    docker cp $id:/fzf_$FULL_VERSION.deb - > ./fzf_$FULL_VERSION.deb
-    tar -xf ./fzf_$FULL_VERSION.deb
+  docker build . -t fzf-${DEB_ARCH} \
+    --build-arg FZF_VERSION=$FZF_VERSION \
+    --build-arg BUILD_VERSION=$BUILD_VERSION \
+    --build-arg FULL_VERSION=$FULL_VERSION \
+    --build-arg DEB_ARCH=$DEB_ARCH
+  id="$(docker create fzf-${DEB_ARCH})"
+  docker cp $id:/fzf_$FULL_VERSION.deb - > ./fzf_$FULL_VERSION.deb
+  tar -xf ./fzf_$FULL_VERSION.deb
 
-    rm -rf build/${DEB_ARCH}
-  done
+  rm -rf build/${DEB_ARCH}
 done
